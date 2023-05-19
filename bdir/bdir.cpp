@@ -14,17 +14,24 @@ int main(int argc, char* argv[])
     std::cout << std::setw(7) << "TYPE" << std::setw(15) << "SIZE" << "    " << "NAME" << std::endl;
     for (auto& path : fs::directory_iterator(dir_path))
     {
-        bool is_file = fs::is_regular_file(path);
-        std::cout << std::setw(7) << (is_file ? "File" : "Dir") << std::setw(15);
-        if (fs::is_regular_file(path))
+        try
         {
-            std::cout << size_str(fs::file_size(path));
+            bool is_file = fs::is_regular_file(path);
+            std::cout << std::setw(7) << (is_file ? "File" : "Dir") << std::setw(15);
+            if (fs::is_regular_file(path))
+            {
+                std::cout << size_str(fs::file_size(path));
+            }
+            else
+            {
+                size_t dir_size = 0;
+                calc_dir_size(path, dir_size);
+                std::cout << size_str(dir_size);
+            }
         }
-        else
+        catch (std::exception& e)
         {
-            size_t dir_size = 0;
-            calc_dir_size(path, dir_size);
-            std::cout << size_str(dir_size);
+            std::cout << "no access";
         }
         std::cout << "    " << path.path().filename().string() << std::endl;
     }
